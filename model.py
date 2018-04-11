@@ -6,6 +6,7 @@ from keras.models import Sequential
 from keras.layers import Flatten, Dense, Convolution2D, Activation, Lambda, Dropout
 from keras.layers.pooling import AveragePooling2D
 from keras.layers.normalization import BatchNormalization
+from keras.layers.convolutional import Cropping2D
 from keras.models import load_model
 from keras.regularizers import l2
 from sklearn.utils import shuffle
@@ -21,7 +22,8 @@ def create_model():
         return load_model(MODEL_FILE)
     except:
         model = Sequential()
-        model.add(Lambda(lambda x: x/255 - 0.5, input_shape=(65, 320, 3)))
+        model.add(Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3)))
+        model.add(Lambda(lambda x: x/255 - 0.5))
         model.add(Convolution2D(16, 5, 5, border_mode='valid'))
         model.add(AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid', dim_ordering='tf'))
         model.add(Activation('relu'))
@@ -42,6 +44,10 @@ def create_model():
         model.add(Dropout(0.5))
 
         model.add(Flatten())
+
+        model.add(Dense(10, W_regularizer=l2(0.1)))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.5))
 
         model.add(Dense(10, W_regularizer=l2(0.1)))
         model.add(Activation('relu'))
@@ -104,7 +110,7 @@ def main():
                     gen_angles.append(-angl)
 
                 # trim image to only see section with road
-                X_train = np.array(gen_images)[:, 75:140, :, :]
+                X_train = np.array(gen_images)
                 y_train = np.array(gen_angles)
                 yield shuffle(X_train, y_train)
 
