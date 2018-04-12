@@ -1,3 +1,4 @@
+import pickle
 import pandas
 import numpy as np
 import cv2
@@ -16,42 +17,50 @@ MODEL_FILE = 'model.h5'
 DATA_FOLDER = './data'
 
 
-def create_model():
-    try:
-        raise
+def create_model(load=False):
+    if load:
         return load_model(MODEL_FILE)
-    except:
+    else:
         model = Sequential()
         model.add(Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3)))
-        model.add(Lambda(lambda x: x/255 - 0.5))
-        model.add(Convolution2D(16, 5, 5, border_mode='valid'))
-        model.add(AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid', dim_ordering='tf'))
-        model.add(Activation('relu'))
-        # model.add(
-        #     BatchNormalization(
-        #         epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)
-        # )
+        model.add(Lambda(lambda x: x/255.0 - 0.5))
 
+        model.add(Convolution2D(24, 5, 5, border_mode='valid'))
+        model.add(AveragePooling2D(pool_size=(1, 1), strides=None, border_mode='valid', dim_ordering='tf'))
+        model.add(Activation('relu'))
         model.add(Dropout(0.5))
-        model.add(Convolution2D(64, 5, 5, border_mode='valid'))
-        model.add(AveragePooling2D(pool_size=(2, 2), strides=(2, 2), border_mode='valid', dim_ordering='default'))
+
+        model.add(Convolution2D(36, 5, 5, border_mode='valid'))
+        model.add(AveragePooling2D(border_mode='valid', dim_ordering='default'))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.5))
+
+        model.add(Convolution2D(48, 5, 5, border_mode='valid'))
+        model.add(AveragePooling2D(border_mode='valid', dim_ordering='default'))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.5))
+
+        model.add(Convolution2D(64, 3, 3, border_mode='valid'))
+        model.add(AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default'))
         model.add(Activation('relu'))
 
-        # model.add(
-        #     BatchNormalization(
-        #         epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)
-        # )
-        model.add(Dropout(0.5))
+        model.add(Convolution2D(64, 3, 3, border_mode='valid'))
+        model.add(AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default'))
+        model.add(Activation('relu'))
 
         model.add(Flatten())
 
-        model.add(Dense(10, W_regularizer=l2(0.1)))
+        model.add(Dense(1164, W_regularizer=l2(0.1)))
         model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+
+        model.add(Dense(100, W_regularizer=l2(0.1)))
+        model.add(Activation('relu'))
+
+        model.add(Dense(50, W_regularizer=l2(0.1)))
+        model.add(Activation('relu'))
 
         model.add(Dense(10, W_regularizer=l2(0.1)))
         model.add(Activation('relu'))
-        model.add(Dropout(0.5))
 
         model.add(Dense(1))
         model.compile(loss='mse', optimizer='adam', metrics=['mse'])
@@ -63,10 +72,7 @@ def main():
     angles = []
 
     def fun(path):
-        try:
-            assert path
-        except:
-            import pdb; pdb.set_trace()
+        assert path
         image = cv2.imread('./{0}/IMG/'.format(DATA_FOLDER) + path.split('/')[-1])
         assert image.shape == (160, 320, 3)
         return image
@@ -118,13 +124,18 @@ def main():
     valid_generator = generator(valid_images, valid_angles, batch_size=32)
 
     model = create_model()
-    model.fit_generator(
+    history = model.fit_generator(
         train_generator,
-        samples_per_epoch=3 * 2 * len(train_images),
+        samples_per_epoch=32*3000,
         validation_data=valid_generator,
         nb_val_samples=len(valid_images),
-        nb_epoch=3)
+        nb_epoch=1,
+        verbose=1)
+
     model.save('model.h5')
+
+    with open('history.p', 'wb') as _file:
+        pickle.dump(history.history, _file)
 
 
 if __name__ == "__main__":
