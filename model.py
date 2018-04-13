@@ -101,7 +101,7 @@ def main():
     from sklearn.model_selection import train_test_split
     train_images, valid_images, train_angles, valid_angles = train_test_split(images, angles, test_size=0.2, random_state=13)
 
-    def generator(images, angles, batch_size=32):
+    def generator(images, angles, batch_size=32, augment=False):
         num_samples = len(images)
         while 1: # Loop forever so the generator never terminates
             shuffle(images, angles)
@@ -115,17 +115,21 @@ def main():
                     image = fun(path)
                     if image is None:
                         continue
-                    gen_images.append(image)
-                    gen_angles.append(angl)
-                    gen_images.append(np.fliplr(image))
-                    gen_angles.append(-angl)
+                    if augment:
+                        gen_images.append(image)
+                        gen_angles.append(angl)
+                        gen_images.append(np.fliplr(image))
+                        gen_angles.append(-angl)
+                    else:
+                        if not 'center' in path:
+                            continue
 
                 # trim image to only see section with road
                 X_train = np.array(gen_images)
                 y_train = np.array(gen_angles)
                 yield shuffle(X_train, y_train)
 
-    train_generator = generator(train_images, train_angles, batch_size=32)
+    train_generator = generator(train_images, train_angles, batch_size=32, augment=True)
     valid_generator = generator(valid_images, valid_angles, batch_size=32)
 
     model = create_model()
