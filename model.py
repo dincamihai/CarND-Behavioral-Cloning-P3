@@ -115,14 +115,13 @@ def main():
                     image = fun(path)
                     if image is None:
                         continue
+                    if (not augment) and not ('center' in path):
+                        continue
+                    gen_images.append(image)
+                    gen_angles.append(angl)
                     if augment:
-                        gen_images.append(image)
-                        gen_angles.append(angl)
                         gen_images.append(np.fliplr(image))
                         gen_angles.append(-angl)
-                    else:
-                        if not 'center' in path:
-                            continue
 
                 # trim image to only see section with road
                 X_train = np.array(gen_images)
@@ -135,10 +134,10 @@ def main():
     model = create_model()
     history = model.fit_generator(
         train_generator,
-        samples_per_epoch=6*len(train_images),
+        samples_per_epoch=32*1000,
         validation_data=valid_generator,
-        nb_val_samples=6*len(valid_images),
-        nb_epoch=3,
+        nb_val_samples=len(valid_images),
+        nb_epoch=2,
         verbose=1)
 
     model.save('model.h5')
