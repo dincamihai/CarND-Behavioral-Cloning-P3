@@ -1,4 +1,5 @@
 import os
+import datetime
 import pickle
 import pandas
 import numpy as np
@@ -51,16 +52,16 @@ def create_model(load=False):
 
         model.add(Flatten())
 
-        model.add(Dense(1164, W_regularizer=l2(0.1)))
+        model.add(Dense(1164, W_regularizer=l2(0.3)))
         model.add(Activation('relu'))
 
-        model.add(Dense(100, W_regularizer=l2(0.1)))
+        model.add(Dense(100, W_regularizer=l2(0.3)))
         model.add(Activation('relu'))
 
-        model.add(Dense(50, W_regularizer=l2(0.1)))
+        model.add(Dense(50, W_regularizer=l2(0.3)))
         model.add(Activation('relu'))
 
-        model.add(Dense(10, W_regularizer=l2(0.1)))
+        model.add(Dense(10, W_regularizer=l2(0.3)))
         model.add(Activation('relu'))
 
         model.add(Dense(1))
@@ -69,6 +70,7 @@ def create_model(load=False):
 
 
 def main():
+    correction = 0.6
 
     def fun(path):
         assert path
@@ -88,7 +90,6 @@ def main():
             images += chunk.loc[:, 'center'].tolist()
             angles += chunk.loc[:, 'angles'].tolist()
 
-            correction = 0.5
             left_images_chunk = chunk.loc[:, 'left']
             right_images_chunk = chunk.loc[:, 'right']
 
@@ -128,19 +129,19 @@ def main():
                 y_train = np.array(gen_angles)
                 yield shuffle(X_train, y_train)
 
-    train_generator = generator(train_images, train_angles, batch_size=32, augment=True)
-    valid_generator = generator(valid_images, valid_angles, batch_size=32)
+    train_generator = generator(train_images, train_angles, batch_size=128, augment=True)
+    valid_generator = generator(valid_images, valid_angles, batch_size=128, augment=True)
 
     model = create_model()
     history = model.fit_generator(
         train_generator,
-        samples_per_epoch=32*1000,
+        samples_per_epoch=len(train_images)/5,
         validation_data=valid_generator,
-        nb_val_samples=len(valid_images),
-        nb_epoch=2,
+        nb_val_samples=len(valid_images)/5,
+        nb_epoch=9,
         verbose=1)
 
-    model.save('model.h5')
+    model.save('model.h5-{0}-{1}'.format(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S"), correction))
 
     with open('history.p', 'wb') as _file:
         pickle.dump(history.history, _file)
