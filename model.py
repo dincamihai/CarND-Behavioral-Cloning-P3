@@ -5,8 +5,9 @@ import pandas
 import numpy as np
 import cv2
 import h5py
-from keras.models import Sequential
-from keras.layers import Flatten, Dense, Convolution2D, Activation, Lambda, Dropout
+import fnmatch
+from keras.models import Model
+from keras.layers import Input, Flatten, Dense, Convolution2D, Activation, Lambda, Dropout, merge
 from keras.layers.pooling import AveragePooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Cropping2D
@@ -17,60 +18,62 @@ from sklearn.utils import shuffle
 
 MODEL_FILE = 'model.h5'
 DATA_FOLDER = './data'
+ALLOWED_PATTERN = '*'
 
 
 def create_model(load=False):
     if load:
         return load_model(MODEL_FILE)
     else:
-        model = Sequential()
-        model.add(Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3)))
-        model.add(Lambda(lambda x: x/255.0 - 0.5))
+        inputs = Input(shape=(160, 320, 3))
+        main = Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3))(inputs)
+        main = Lambda(lambda x: x/255.0 - 0.5)(main)
 
-        model.add(Convolution2D(24, 5, 5, border_mode='valid'))
-        model.add(AveragePooling2D(pool_size=(1, 1), strides=None, border_mode='valid', dim_ordering='tf'))
-        model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        main = Convolution2D(24, 5, 5, border_mode='valid')(main)
+        main = AveragePooling2D(pool_size=(1, 1), strides=None, border_mode='valid', dim_ordering='tf')(main)
+        main = Activation('relu')(main)
+        main = Dropout(0.5)(main)
 
-        model.add(Convolution2D(36, 5, 5, border_mode='valid'))
-        model.add(AveragePooling2D(border_mode='valid', dim_ordering='default'))
-        model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        main = Convolution2D(36, 5, 5, border_mode='valid')(main)
+        main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
+        main = Activation('relu')(main)
+        main = Dropout(0.5)(main)
 
-        model.add(Convolution2D(48, 5, 5, border_mode='valid'))
-        model.add(AveragePooling2D(border_mode='valid', dim_ordering='default'))
-        model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        main = Convolution2D(48, 5, 5, border_mode='valid')(main)
+        main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
+        main = Activation('relu')(main)
+        main = Dropout(0.5)(main)
 
-        model.add(Convolution2D(64, 3, 3, border_mode='valid'))
-        model.add(AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default'))
-        model.add(Activation('relu'))
+        main = Convolution2D(64, 3, 3, border_mode='valid')(main)
+        main = AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default')(main)
+        main = Activation('relu')(main)
 
-        model.add(Convolution2D(64, 3, 3, border_mode='valid'))
-        model.add(AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default'))
-        model.add(Activation('relu'))
+        main = Convolution2D(64, 3, 3, border_mode='valid')(main)
+        main = AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default')(main)
+        main = Activation('relu')(main)
 
-        model.add(Flatten())
+        main = Flatten()(main)
 
-        model.add(Dense(1164, W_regularizer=l2(0.3)))
-        model.add(Activation('relu'))
+        main = Dense(1164, W_regularizer=l2(0.3))(main)
+        main = Activation('relu')(main)
 
-        model.add(Dense(100, W_regularizer=l2(0.3)))
-        model.add(Activation('relu'))
+        main = Dense(100, W_regularizer=l2(0.3))(main)
+        main = Activation('relu')(main)
 
-        model.add(Dense(50, W_regularizer=l2(0.3)))
-        model.add(Activation('relu'))
+        main = Dense(50, W_regularizer=l2(0.3))(main)
+        main = Activation('relu')(main)
 
-        model.add(Dense(10, W_regularizer=l2(0.3)))
-        model.add(Activation('relu'))
+        main = Dense(10, W_regularizer=l2(0.3))(main)
+        main = Activation('relu')(main)
 
-        model.add(Dense(1))
+        main = Dense(1)(main)
+        model = Model(input=inputs, output=main)
         model.compile(loss='mse', optimizer='adam', metrics=['mse'])
         return model
 
 
 def main():
-    correction = 0.6
+    correction = 0.1
 
     def fun(path):
         assert path
@@ -82,6 +85,10 @@ def main():
     angles = []
     data_root = './%s' % DATA_FOLDER
     for item in os.listdir(data_root):
+        if not fnmatch.fnmatch(item, ALLOWED_PATTERN):
+            print("Skipping %s" % item)
+            continue
+        print("Processing %s" % item)
         for chunk in pandas.read_csv(
             '/'.join([data_root, item, 'driving_log.csv']),
             names=['center', 'left', 'right', 'angles', 'x', 'y', 'speed'],
@@ -132,16 +139,18 @@ def main():
     train_generator = generator(train_images, train_angles, batch_size=128, augment=True)
     valid_generator = generator(valid_images, valid_angles, batch_size=128, augment=True)
 
-    model = create_model()
+    model = create_model(load=True)
     history = model.fit_generator(
         train_generator,
-        samples_per_epoch=len(train_images)/5,
+        samples_per_epoch=len(train_images)/10,
         validation_data=valid_generator,
-        nb_val_samples=len(valid_images)/5,
-        nb_epoch=9,
+        nb_val_samples=len(valid_images)/10,
+        nb_epoch=7,
         verbose=1)
 
-    model.save('model.h5-{0}-{1}'.format(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S"), correction))
+    model_file = 'model.h5-{0}-{1}'.format(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S"), correction)
+    model.save(model_file)
+    print("%s saved" % model_file)
 
     with open('history.p', 'wb') as _file:
         pickle.dump(history.history, _file)
