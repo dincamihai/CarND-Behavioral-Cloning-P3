@@ -5,7 +5,7 @@ import pandas
 import numpy as np
 import cv2
 import h5py
-import fnmatch
+import glob
 from keras.models import Model
 from keras.layers import Input, Flatten, Dense, Convolution2D, Activation, Lambda, Dropout, merge
 from keras.layers.pooling import AveragePooling2D
@@ -17,8 +17,7 @@ from sklearn.utils import shuffle
 
 
 MODEL_FILE = 'model.h5'
-DATA_FOLDER = './data'
-ALLOWED_PATTERN = '*'
+ALLOWED_PATTERN = 'data/*[!-track2]'
 
 
 def create_model(load=False):
@@ -32,17 +31,17 @@ def create_model(load=False):
         main = Convolution2D(24, 5, 5, border_mode='valid')(main)
         main = AveragePooling2D(pool_size=(1, 1), strides=None, border_mode='valid', dim_ordering='tf')(main)
         main = Activation('relu')(main)
-        main = Dropout(0.5)(main)
+        main = Dropout(0.7)(main)
 
         main = Convolution2D(36, 5, 5, border_mode='valid')(main)
         main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
         main = Activation('relu')(main)
-        main = Dropout(0.5)(main)
+        main = Dropout(0.7)(main)
 
         main = Convolution2D(48, 5, 5, border_mode='valid')(main)
         main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
         main = Activation('relu')(main)
-        main = Dropout(0.5)(main)
+        main = Dropout(0.7)(main)
 
         main = Convolution2D(64, 3, 3, border_mode='valid')(main)
         main = AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default')(main)
@@ -73,7 +72,7 @@ def create_model(load=False):
 
 
 def main():
-    correction = 0.1
+    correction = 0.6
 
     def fun(path):
         assert path
@@ -83,14 +82,11 @@ def main():
 
     images = []
     angles = []
-    data_root = './%s' % DATA_FOLDER
-    for item in os.listdir(data_root):
-        if not fnmatch.fnmatch(item, ALLOWED_PATTERN):
-            print("Skipping %s" % item)
-            continue
+    for item in glob.glob(ALLOWED_PATTERN):
         print("Processing %s" % item)
+        import pdb; pdb.set_trace()
         for chunk in pandas.read_csv(
-            '/'.join([data_root, item, 'driving_log.csv']),
+            '/'.join(['.', item, 'driving_log.csv']),
             names=['center', 'left', 'right', 'angles', 'x', 'y', 'speed'],
             chunksize=1000
         ):
@@ -142,9 +138,9 @@ def main():
     model = create_model(load=True)
     history = model.fit_generator(
         train_generator,
-        samples_per_epoch=len(train_images)/10,
+        samples_per_epoch=len(train_images)/6,
         validation_data=valid_generator,
-        nb_val_samples=len(valid_images)/10,
+        nb_val_samples=len(valid_images)/6,
         nb_epoch=7,
         verbose=1)
 
