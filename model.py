@@ -8,7 +8,7 @@ import h5py
 import glob
 from keras.models import Model
 from keras.layers import Input, Flatten, Dense, Convolution2D, Activation, Lambda, Dropout, merge
-from keras.layers.pooling import AveragePooling2D
+from keras.layers.pooling import AveragePooling2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Cropping2D
 from keras.models import load_model
@@ -17,7 +17,8 @@ from sklearn.utils import shuffle
 
 
 MODEL_FILE = 'model.h5'
-ALLOWED_PATTERN = 'data/*[!-track2]'
+# ALLOWED_PATTERN = 'data/*[!-track2]'
+ALLOWED_PATTERN = 'data/*'
 
 
 def create_model(load=False):
@@ -27,42 +28,24 @@ def create_model(load=False):
         inputs = Input(shape=(160, 320, 3))
         main = Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3))(inputs)
         main = Lambda(lambda x: x/255.0 - 0.5)(main)
+        main = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid', dim_ordering='tf')(main)
 
-        main = Convolution2D(24, 5, 5, border_mode='valid')(main)
-        main = AveragePooling2D(pool_size=(1, 1), strides=None, border_mode='valid', dim_ordering='tf')(main)
+        main = Convolution2D(24, 2, 2, border_mode='valid')(main)
+        main = AveragePooling2D(pool_size=(3, 3), strides=None, border_mode='valid', dim_ordering='tf')(main)
         main = Activation('relu')(main)
-        main = Dropout(0.7)(main)
+        main = Dropout(0.5)(main)
 
-        main = Convolution2D(36, 5, 5, border_mode='valid')(main)
-        main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
+        main = Convolution2D(48, 2, 2, border_mode='valid')(main)
+        main = AveragePooling2D(pool_size=(3, 3), strides=None, border_mode='valid', dim_ordering='default')(main)
         main = Activation('relu')(main)
-        main = Dropout(0.7)(main)
-
-        main = Convolution2D(48, 5, 5, border_mode='valid')(main)
-        main = AveragePooling2D(border_mode='valid', dim_ordering='default')(main)
-        main = Activation('relu')(main)
-        main = Dropout(0.7)(main)
-
-        main = Convolution2D(64, 3, 3, border_mode='valid')(main)
-        main = AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default')(main)
-        main = Activation('relu')(main)
-
-        main = Convolution2D(64, 3, 3, border_mode='valid')(main)
-        main = AveragePooling2D(pool_size=(1, 1), border_mode='valid', dim_ordering='default')(main)
-        main = Activation('relu')(main)
+        main = Dropout(0.5)(main)
 
         main = Flatten()(main)
 
-        main = Dense(1164, W_regularizer=l2(0.3))(main)
+        main = Dense(50, W_regularizer=l2(0.7))(main)
         main = Activation('relu')(main)
 
-        main = Dense(100, W_regularizer=l2(0.3))(main)
-        main = Activation('relu')(main)
-
-        main = Dense(50, W_regularizer=l2(0.3))(main)
-        main = Activation('relu')(main)
-
-        main = Dense(10, W_regularizer=l2(0.3))(main)
+        main = Dense(7, W_regularizer=l2(0.5))(main)
         main = Activation('relu')(main)
 
         main = Dense(1)(main)
@@ -84,7 +67,6 @@ def main():
     angles = []
     for item in glob.glob(ALLOWED_PATTERN):
         print("Processing %s" % item)
-        import pdb; pdb.set_trace()
         for chunk in pandas.read_csv(
             '/'.join(['.', item, 'driving_log.csv']),
             names=['center', 'left', 'right', 'angles', 'x', 'y', 'speed'],
@@ -118,6 +100,7 @@ def main():
                 for path, angl in zip(batch_images, batch_angles):
                     image = fun(path)
                     if image is None:
+                        print("Skipping image: %s" % image)
                         continue
                     if (not augment) and not ('center' in path):
                         continue
@@ -135,13 +118,13 @@ def main():
     train_generator = generator(train_images, train_angles, batch_size=128, augment=True)
     valid_generator = generator(valid_images, valid_angles, batch_size=128, augment=True)
 
-    model = create_model(load=True)
+    model = create_model()
     history = model.fit_generator(
         train_generator,
-        samples_per_epoch=len(train_images)/6,
+        samples_per_epoch=len(train_images)/10,
         validation_data=valid_generator,
-        nb_val_samples=len(valid_images)/6,
-        nb_epoch=7,
+        nb_val_samples=len(valid_images)/10,
+        nb_epoch=5,
         verbose=1)
 
     model_file = 'model.h5-{0}-{1}'.format(datetime.datetime.now().strftime("%y-%m-%d-%H-%M-%S"), correction)
