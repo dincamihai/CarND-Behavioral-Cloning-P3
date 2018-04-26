@@ -104,7 +104,7 @@ def main():
         'data.v1/track1-recovery',
         'data.v1/track1-reverse',
         # 'data.v1/track2-forward',
-        # 'data.v1/track2-recovery'
+        'data.v1/track2-recovery'
     ]
 
     for item in paths:
