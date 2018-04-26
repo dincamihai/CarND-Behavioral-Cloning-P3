@@ -11,53 +11,46 @@ from keras.layers import Input, Flatten, Dense, Convolution2D, Activation, Lambd
 from keras.layers.pooling import AveragePooling2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Cropping2D
+from keras.layers.normalization import BatchNormalization
+from keras.optimizers import Adagrad
 from keras.models import load_model
 from keras.regularizers import l2
 from sklearn.utils import shuffle
+from skimage.color import rgb2hsv
+from matplotlib import pyplot as plt
 
 
 MODEL_FILE = 'model.h5'
-# ALLOWED_PATTERN = 'data/*[!-track2]'
-ALLOWED_PATTERN = 'data.v1/*'
 
 
+
+from keras.backend import tf as ktf
 def create_model(load=False):
     inputs = Input(shape=(160, 320, 3))
     main = Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3))(inputs)
     main = Lambda(lambda x: x/255.0 - 0.5)(main)
-    main = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), border_mode='valid')(main)
+    main = MaxPooling2D(pool_size=(5, 5), strides=(3, 3), border_mode='valid')(main)
 
-    right = Convolution2D(24, 5, 5, border_mode='valid')(main)
-    right = AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(right)
-    right = Activation('relu')(right)
-    right = Dropout(0.3)(right)
+    main = Convolution2D(36, 5, 5, subsample=(2, 2), border_mode='valid')(main)
+    main = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(main)
+    main = Activation('relu')(main)
+    main = BatchNormalization(
+        epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)(main)
+    main = Dropout(0.5)(main)
 
-    right = Convolution2D(48, 3, 3, border_mode='valid')(main)
-    right = AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(right)
-    right = Activation('relu')(right)
-    right = Dropout(0.5)(right)
+    main = Convolution2D(64, 3, 3, subsample=(1, 1), border_mode='valid')(main)
+    main = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(main)
+    main = Activation('relu')(main)
+    main = BatchNormalization(
+        epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)(main)
+    main = Dropout(0.5)(main)
 
-    right = Convolution2D(48, 2, 2, border_mode='valid')(right)
-    right = AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(right)
-    right = Activation('relu')(right)
-    right = Dropout(0.5)(right)
+    main = Flatten()(main)
 
-    left = Convolution2D(48, 5, 5, border_mode='valid')(main)
-    left = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(left)
-    left = Activation('relu')(left)
-    left = Dropout(0.5)(left)
-
-    left = Convolution2D(48, 2, 2, border_mode='valid')(left)
-    left = AveragePooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(left)
-    left = Activation('relu')(left)
-    left = Dropout(0.5)(left)
-
-    main = merge([Flatten()(left), Flatten()(right)], mode='concat')
-
-    main = Dense(50, W_regularizer=l2(0.009))(main)
+    main = Dense(50, W_regularizer=l2(0.01))(main)
     main = Activation('relu')(main)
 
-    main = Dense(20, W_regularizer=l2(0.009))(main)
+    main = Dense(20, W_regularizer=l2(0.01))(main)
     main = Activation('relu')(main)
 
     main = Dense(1)(main)
@@ -69,22 +62,57 @@ def create_model(load=False):
 
 
 def main():
-    correction = 0.4
+    correction = 0.9
 
-    def fun(path):
+    def fun(path, usehsv=False):
         assert path
         image = cv2.imread('/'.join(['.'] + path.split('/')[-4:]))
+        if not usehsv:
+            return image
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        lower_blue = np.array([0,0,0])
+        upper_blue = np.array([60,100,255])
+        mask = cv2.inRange(hsv, lower_blue, upper_blue)
+        res = cv2.bitwise_and(image, image, mask=mask)
+        # cv2.imwrite('image.png', hsv)
+        # cv2.imwrite('mask.png', mask)
+        # cv2.imwrite('out.png', res)
         # assert image.shape == (160, 320, 3)
-        return image
+        return res 
 
     images = []
     angles = []
-    for item in glob.glob(ALLOWED_PATTERN):
+    paths = [
+        # 'data/bridge',
+        # 'data/curve-correction',
+        # 'data/curves-track2',
+        # 'data/edge-to-center',
+        # 'data/forward-center-track2',
+        # 'data/forward-left-track2',
+        # 'data/forward-slow',
+        # 'data/forward-track2',
+        # 'data/forward',
+        # 'data/more-recovery-track2',
+        # 'data/recovery-track2',
+        # 'data/reverse-left-track2',
+        # 'data/reverse-slow',
+        # 'data/reverse-track2',
+        # 'data/reverse',
+        # 'data/track2',
+        # 'data/unclear-edge',
+        'data.v1/track1-forward',
+        'data.v1/track1-recovery',
+        'data.v1/track1-reverse',
+        # 'data.v1/track2-forward',
+        # 'data.v1/track2-recovery'
+    ]
+
+    for item in paths:
         print("Processing %s" % item)
         for chunk in pandas.read_csv(
             '/'.join(['.', item, 'driving_log.csv']),
             names=['center', 'left', 'right', 'angles', 'x', 'y', 'speed'],
-            chunksize=1000
+            chunksize=3000
         ):
             center_images = chunk.loc[:, 'center']
             center_angles = chunk.loc[:, 'angles']
