@@ -105,15 +105,18 @@ For details about how I created the training data, see the next section.
 
 The overall strategy for deriving a model architecture was:
 
- - implement an architecture that already prooved good results (eg: lenet or nvidia model)
- - collect the right data to make it drive on track1
+ - implement a simple model to make sure the training works and to establish the workflow
+ - implement an architecture that already proved good results (eg: lenet or nvidia)
+ - tune and collect the right data to make it drive on track1
+ - check it is not completely bad on track2
  - reduce the model but retain the performance
- - check on track2
  - collect data to drive on track2
  - bonus:
    - make it drive on both tracks
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+My first step was to use a convolution neural network model similar to the nvidia model described in this paper: http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf
+
+I chose this model since it was implemented exactly for this purpose, to be used on a self-driven car.
 
 In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
 
