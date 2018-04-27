@@ -73,13 +73,24 @@ My model consists of:
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+In order to reduce overfitting, the model contains dropout layers in the convolutional section
+  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L44
+  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L52
+  
+and L2 regularization in the fully connected network
+  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L57
+  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L60
+  
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting (https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L148). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually (https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L70).
+
+I tuned the dropout and the L2 regularization but also the correction applied to left and right images: https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L75
+
+I've also treated the training data as a parameter and tuned it in order to get the best performance. https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L95-L118
 
 #### 4. Appropriate training data
 
