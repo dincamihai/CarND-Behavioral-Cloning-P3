@@ -110,7 +110,14 @@ For details about how I created the training data, see the next section.
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The overall strategy for deriving a model architecture was:
+
+ - implement an architecture that already prooved good results (eg: lenet or nvidia model)
+ - collect the right data to make it drive on track1
+ - reduce the model but retain the performance
+ - check on track2
+ - collect data to drive on track2
+ - make it drive on both tracks
 
 My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
 
