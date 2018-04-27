@@ -27,9 +27,14 @@ MODEL_FILE = 'model.h5'
 from keras.backend import tf as ktf
 def create_model(load=False):
     inputs = Input(shape=(160, 320, 3))
+
+    # remove sky and car front from images
     main = Cropping2D(cropping=((75,20), (0,0)), input_shape=(160, 320, 3))(inputs)
+
+    # normalize images values to mean 0
     main = Lambda(lambda x: x/255.0 - 0.5)(main)
     main = MaxPooling2D(pool_size=(5, 5), strides=(3, 3), border_mode='valid')(main)
+    # 3x21x106
 
     main = Convolution2D(36, 5, 5, subsample=(2, 2), border_mode='valid')(main)
     main = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(main)
@@ -37,6 +42,7 @@ def create_model(load=False):
     main = BatchNormalization(
         epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)(main)
     main = Dropout(0.5)(main)
+    # 36x4x25
 
     main = Convolution2D(64, 3, 3, subsample=(1, 1), border_mode='valid')(main)
     main = MaxPooling2D(pool_size=(2, 2), strides=None, border_mode='valid')(main)
@@ -44,6 +50,7 @@ def create_model(load=False):
     main = BatchNormalization(
         epsilon=0.001, mode=0, axis=-1, momentum=0.99, weights=None, beta_init='zero', gamma_init='one', gamma_regularizer=None, beta_regularizer=None)(main)
     main = Dropout(0.5)(main)
+    # 64x1x11
 
     main = Flatten()(main)
 
@@ -55,8 +62,11 @@ def create_model(load=False):
 
     main = Dense(1)(main)
     model = Model(input=inputs, output=main)
+
     if load:
+        # load weights from saved model
         model.load_weights(MODEL_FILE)
+
     model.compile(loss='mse', optimizer='adam', metrics=['mse'])
     return model
 
@@ -78,7 +88,7 @@ def main():
         # cv2.imwrite('mask.png', mask)
         # cv2.imwrite('out.png', res)
         # assert image.shape == (160, 320, 3)
-        return res 
+        return res
 
     images = []
     angles = []
@@ -117,9 +127,11 @@ def main():
             center_images = chunk.loc[:, 'center']
             center_angles = chunk.loc[:, 'angles']
 
+            # include left images in the training and validation data
             left_images = chunk.loc[:, 'left']
             left_angles = correction + center_angles
 
+            # include right images in the training and validation data
             right_images = chunk.loc[:, 'right']
             right_angles = -correction + center_angles
 
@@ -152,6 +164,8 @@ def main():
                         continue
                     gen_images.append(image)
                     gen_angles.append(angl)
+
+                    # include flipped images in training and validation data
                     gen_images.append(np.fliplr(image))
                     gen_angles.append(-angl)
 
