@@ -95,14 +95,7 @@ I've also treated the training data as a parameter and tuned it in order to get 
 #### 4. Appropriate training data
 
 Training data was chosen to keep the vehicle driving on the road.
-I used a combination of center lane driving:
-  - #TODO: add example here
-
-recovering from the left and right sides of the road:
-  - #TODO: add example here
-  
-and driving the track in reverse:
-  - #TODO: add example here
+I used a combination of center lane driving, recovering from the left and right sides of the road and driving the track in reverse.
 
 For details about how I created the training data, see the next section. 
 
@@ -117,7 +110,8 @@ The overall strategy for deriving a model architecture was:
  - reduce the model but retain the performance
  - check on track2
  - collect data to drive on track2
- - make it drive on both tracks
+ - bonus:
+   - make it drive on both tracks
 
 My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
 
