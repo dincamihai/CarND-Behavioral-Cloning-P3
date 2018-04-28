@@ -15,7 +15,7 @@ The goals / steps of this project are the following:
 [image1]: ./examples/placeholder.png "Model Visualization"
 [image2]: ./examples/track1-center.gif "Center driving"
 [image3]: ./examples/track1-recovery.gif "Recovery driving"
-[image4]: ./examples/track1-reverse.gif "Reverse lap track1"
+[image4]: ./examples/track1-center-reverse.gif "Reverse lap track1"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
