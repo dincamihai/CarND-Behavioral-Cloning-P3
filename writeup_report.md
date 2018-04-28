@@ -232,7 +232,14 @@ The model still crashed on track2. At this point I noticed I was using AveragePo
 
 ![alt text][image13] ![alt text][image14]
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+I wanted to prove I was right thinking that MaxPooling had a big role and I switched back to AveragePooling and retrained the model.
+
+AveragePooling vs. MaxPooling
+![alt text][image15] ![alt text][image14]
+
+Collected data contained approx. 95K data points from both track1 and track2 (including the augmented images described above).
+The images were cropped at top and bottom to remove the sky and the front of the car.
+I've also experimented with HSV in an attepmt to keep only the road in the image by filtering out the pixels with high values in the saturation channel (i wanted to keep the gray highly saturated road only). This seemed to not have the high impact that I was expecting and I decided not to use it.
 
 I finally randomly shuffled the data set and put Y% of the data into a validation set. 
 
