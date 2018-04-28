@@ -15,7 +15,7 @@ The goals / steps of this project are the following:
 [image1]: ./examples/placeholder.png "Model Visualization"
 [image2]: ./examples/track1-center.gif "Center driving"
 [image3]: ./examples/track1-recovery.gif "Recovery driving"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
+[image4]: ./examples/track1-reverse.gif "Reverse lap track1"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
@@ -150,10 +150,10 @@ After recording this lap I removed the images going from center to edges and kep
 I was interested in teaching the network how to recover from edge and go back to center. Going from center to edge wouldn't be something useful.
 
 ![alt text][image3]
-![alt text][image4]
-![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
+I have alsa recorded a lap driving on track1 counter-clock wise:
+
+![alt text][image4]
 
 To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
 
