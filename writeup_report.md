@@ -13,8 +13,8 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./examples/placeholder.png "Model Visualization"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
+[image2]: ./examples/track1-center.gif "Center driving"
+[image3]: ./examples/track1-recovery.gif "Recovery driving"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
 [image5]: ./examples/placeholder_small.png "Recovery Image"
 [image6]: ./examples/placeholder_small.png "Normal Image"
@@ -138,11 +138,16 @@ Here is a visualization of the architecture (note: visualizing the architecture 
 
 #### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+I started by recording track1 at full speed without taking care to drive on the center. Thin didn't give good results.
+The next step was to record another lap focusing on center driving. This didn't give good results in curves and difficult sections (unclear road edge).
+I proceeded with recording another center driving lap, driving with slow speed and very slow speed on curves and difficult sections (bridge, unclear edges).
+This yelded good results but still had problems.
 
 ![alt text][image2]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I then recorded a lap driving from the left of the road to center and then to the right of the road and back.
+After recording this lap I removed the images going from center to edges and kept only the images going from edge to center.
+I was interested in teaching the network how to recover from edge and go back to center. Going from center to edge wouldn't be something useful.
 
 ![alt text][image3]
 ![alt text][image4]
