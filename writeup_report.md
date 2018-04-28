@@ -15,6 +15,20 @@ The goals / steps of this project are the following:
 [image2]: ./examples/track1-center.gif "Center driving"
 [image3]: ./examples/track1-recovery.gif "Recovery driving"
 [image4]: ./examples/track1-center-reverse.gif "Reverse lap track1"
+[image5]: ./examples/attempt1x10.gif "Attempt1 - track1"
+[image6]: ./examples/attempt2x10.gif "Attempt2 - track1"
+[image7]: ./examples/attempt3x10.gif "Attempt3 - track1"
+[image8]: ./examples/attempt4x10.gif "Attempt4 - track1"
+[image9]: ./examples/attempt5x10.gif "Attempt5 - track1"
+[image10]: ./examples/attempt5-track2x10.gif "Attempt5 - track2"
+[image11]: ./examples/attempt6x10.gif "Attempt6 - track1"
+[image12]: ./examples/attempt6-track2x10.gif "Attempt6 - track2"
+[image13]: ./examples/final-track1x10.gif "Final - track1"
+[image14]: ./examples/final-track2x10.gif "Final - track2"
+[image15]: ./examples/attempt7-track2-avg-poolingx10.gif "Final - track2 - avg. pooling"
+
+
+
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -202,7 +216,6 @@ In order to get more variation to the data I have also recorded a lap driving on
 I also augmented the dataset by appending the images captured with the left and right cameras, using a correction for the recorded angles: [model.py:L130-L145](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L130-L145)
 In addition to this, I also horizontally flipped all the images obtained in the previous step: [model.py:L169-L170](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L169-L170)
 
-Etc ....
 
 After the collection process, I had X number of data points. I then preprocessed this data by ...
 
