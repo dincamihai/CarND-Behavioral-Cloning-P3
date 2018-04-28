@@ -111,7 +111,7 @@ The overall strategy for deriving a model architecture was:
  - bonus:
    - make it drive on both tracks
 
-My first step was to use a convolution neural network model similar to the nvidia model described in this paper: [self-driven card - nvidia](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf)
+My first step was to use a convolution neural network model similar to the nvidia model described in this paper: [self-driven car - nvidia](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf)
 
 I chose this model since it was implemented exactly for this purpose, to be used on a self-driven car.
 
