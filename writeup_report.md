@@ -26,6 +26,10 @@ The goals / steps of this project are the following:
 [image13]: ./examples/final-track1x10.gif "Final - track1"
 [image14]: ./examples/final-track2x10.gif "Final - track2"
 [image15]: ./examples/attempt7-track2-avg-poolingx10.gif "Final - track2 - avg. pooling"
+[image16]: ./examples/image.png "Example Image"
+[image17]: ./examples/mask.png "Saturation Mask"
+[image18]: ./examples/out.png "Filtered Image"
+
 
 
 
@@ -235,11 +239,19 @@ The model still crashed on track2. At this point I noticed I was using AveragePo
 I wanted to prove I was right thinking that MaxPooling had a big role and I switched back to AveragePooling and retrained the model.
 
 AveragePooling vs. MaxPooling
+
 ![alt text][image15] ![alt text][image14]
 
 Collected data contained approx. 95K data points from both track1 and track2 (including the augmented images described above).
 The images were cropped at top and bottom to remove the sky and the front of the car.
 I've also experimented with HSV in an attepmt to keep only the road in the image by filtering out the pixels with high values in the saturation channel (i wanted to keep the gray highly saturated road only). This seemed to not have the high impact that I was expecting and I decided not to use it.
+
+Example of saturation filtering:
+
+Image - Mask - Filtered Image
+
+![alt text][image16] ![alt text][image17] ![alt text][image18]
+
 
 I finally randomly shuffled the data set and put Y% of the data into a validation set. 
 
