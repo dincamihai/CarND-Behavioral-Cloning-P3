@@ -216,6 +216,10 @@ In order to get more variation to the data I have also recorded a lap driving on
 I also augmented the dataset by appending the images captured with the left and right cameras, using a correction for the recorded angles: [model.py:L130-L145](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L130-L145)
 In addition to this, I also horizontally flipped all the images obtained in the previous step: [model.py:L169-L170](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L169-L170)
 
+Training the model with the data obtained above and tuning the parameters, it was finaly able to drive on track1.
+
+![alt text][image5] ![alt text][image6] ![alt text][image7] ![alt text][image8] ![alt text][image9]
+
 
 After the collection process, I had X number of data points. I then preprocessed this data by ...
 
