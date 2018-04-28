@@ -130,6 +130,7 @@ The final model architecture (model.py lines 18-24) consisted of a convolution n
 
 Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
 
+```
 ____________________________________________________________________________________________________
 Layer (type)                     Output Shape          Param #     Connected to                     
 ====================================================================================================
@@ -177,6 +178,7 @@ Total params: 60,227
 Trainable params: 60,027
 Non-trainable params: 200
 ____________________________________________________________________________________________________
+```
 
 #### 3. Creation of the Training Set & Training Process
 
