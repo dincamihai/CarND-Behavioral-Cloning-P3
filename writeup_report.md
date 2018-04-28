@@ -251,7 +251,9 @@ Example of saturation filtering:
 Image - Mask - Filtered Image
 
 ![alt text][image16]
+
 ![alt text][image17]
+
 ![alt text][image18]
 
 
