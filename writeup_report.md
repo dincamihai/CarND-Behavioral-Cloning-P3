@@ -250,7 +250,9 @@ Example of saturation filtering:
 
 Image - Mask - Filtered Image
 
-![alt text][image16] ![alt text][image17] ![alt text][image18]
+![alt text][image16]
+![alt text][image17]
+![alt text][image18]
 
 
 I finally randomly shuffled the data set and put Y% of the data into a validation set. 
