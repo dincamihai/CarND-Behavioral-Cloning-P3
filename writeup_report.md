@@ -220,9 +220,19 @@ Training the model with the data obtained above and tuning the parameters, it wa
 
 ![alt text][image5] ![alt text][image6] ![alt text][image7] ![alt text][image8] ![alt text][image9]
 
+This model was already able to drive on track2 even without seeing track2 before:
+
+![alt text][image10]
+
+It  seemed that it prefered driving on the center (even if, on track2, the center had a road marking that was not there on track1). I decided to collect a lap of track2 with center driving (following the center marking) in order to "encourage" the network to keep the center of the road and also a recovery lap to teach the network how to recover to center (the same I did for track1)
+
+![alt text][image11] ![alt text][image12]
+
+The model still crashed on track2. At this point I noticed I was using AveragePooling and I decided to replace it with MaxPooling. This had a big impact and the model was able to drive on both tracks:
+
+![alt text][image13] ![alt text][image14]
 
 After the collection process, I had X number of data points. I then preprocessed this data by ...
-
 
 I finally randomly shuffled the data set and put Y% of the data into a validation set. 
 
