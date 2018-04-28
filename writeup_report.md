@@ -16,9 +16,6 @@ The goals / steps of this project are the following:
 [image2]: ./examples/track1-center.gif "Center driving"
 [image3]: ./examples/track1-recovery.gif "Recovery driving"
 [image4]: ./examples/track1-center-reverse.gif "Reverse lap track1"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -52,19 +49,19 @@ My model consists of:
 
  - input: 3x160x320
  
- - a pre-processing section: https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L31-L37
+ - a pre-processing section: [model.py:L31-L37](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L31-L37)
    - remove sky and car front from the image
    - normalize the images values to mean 0
    - use maxpooling to reduce the model size (this reduces the number of model weights and speeds up the training)
    - output: 3x21x106
    
- - a convolution neural network: https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L39-L53
+ - a convolution neural network: [model.py:L39-L53](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L39-L53)
    - two layers:
      - 36x5x5 strides 2x2 + max pooling 2x2 + relu -> 36x4x25
      - 64x3x3 strides 1x1 + max pooling 2x2 + relu -> 64x1x11
    - I use batch normalization after each layer to help the optimizer (same effect as normalizing in the pre-processing) and 0.5 dropout to reduce overfitting
 
-- a fully connected section: https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L57-L64
+- a fully connected section: [model.py:L57-L64](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L57-L64)
   - two layers (50 and 20 nodes)
   - I use L2 normalization to reduce overfitting with lambda 0.01
   - I use relu as activation function
@@ -74,23 +71,23 @@ My model consists of:
 #### 2. Attempts to reduce overfitting in the model
 
 In order to reduce overfitting, the model contains dropout layers in the convolutional section
-  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L44
-  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L52
+  - [model.py:L44](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L44)
+  - [model.py:L52](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L52)
   
 and L2 regularization in the fully connected network
-  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L57
-  - https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L60
+  - [model.py:L57](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L57)
+  - [model.py:L60](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L60)
   
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L148). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting [model.py:L148](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L148). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L70).
+The model used an adam optimizer, so the learning rate was not tuned manually [model.py:L70](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L70).
 
-I tuned the dropout and the L2 regularization but also the correction applied to left and right images: https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L75
+I tuned the dropout and the L2 regularization but also the correction applied to left and right images: [model.py:L75](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L75)
 
-I've also treated the training data as a parameter and tuned it in order to get the best performance. https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L95-L118
+I've also treated the training data as a parameter and tuned it in order to get the best performance. [model.py:L95-L118](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L95-L118)
 
 #### 4. Appropriate training data
 
@@ -114,7 +111,7 @@ The overall strategy for deriving a model architecture was:
  - bonus:
    - make it drive on both tracks
 
-My first step was to use a convolution neural network model similar to the nvidia model described in this paper: http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf
+My first step was to use a convolution neural network model similar to the nvidia model described in this paper: [self-driven card - nvidia](http://images.nvidia.com/content/tegra/automotive/images/2016/solutions/pdf/end-to-end-dl-using-px.pdf)
 
 I chose this model since it was implemented exactly for this purpose, to be used on a self-driven car.
 
@@ -151,14 +148,12 @@ I was interested in teaching the network how to recover from edge and go back to
 
 ![alt text][image3]
 
-I have alsa recorded a lap driving on track1 counter-clock wise:
+In order to get more variation to the data I have also recorded a lap driving on track1 counter-clock wise:
 
 ![alt text][image4]
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
+I also augmented the dataset by appending the images captured with the left and right cameras, using a correction for the recorded angles: [model.py:L130-L145](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L130-L145)
+In addition to this, I also horizontally flipped all the images obtained in the previous step: [model.py:L169-L170](https://github.com/dincamihai/CarND-Behavioral-Cloning-P3/blob/master/model.py#L169-L170)
 
 Etc ....
 
