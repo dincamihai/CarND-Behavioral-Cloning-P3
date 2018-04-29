@@ -132,15 +132,14 @@ My first step was to use a convolution neural network model similar to the nvidi
 
 I chose this model since it was implemented exactly for this purpose, to be used on a self-driven car.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+In order to be able to tune the parameters I split my data into a training and validation set. At first, the model had very low mean squared error on training and validation set but it was still not doing good on the track1. I recorded the the data multiple times experimenting with driving slower, driving on the center, combining data from track2, etc.
+It turned out that the best data combination was to use a forward lap from track1 driving moderatelly slow and slower on the special section (bridge, unclear edges and curves), a reverse lap recorded in the same manner and a recovery lap.
 
-To combat the overfitting, I modified the model so that ...
+I've noticed that it was not doing good enough on curves so I tuned the correction (applied to angles for left and right camera captures) and the L2 regularization.
 
-Then I ... 
+At this point, the model was able to stay on track2 but crash on a more difficult track. Because it decided by itself to drive on the center of track2, I recorded a track2 lap of driving on the center and recovery lap from edge to center.
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
-
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+At the end of the process, the vehicle is able to drive autonomously around both tracks.
 
 #### 2. Final Model Architecture
 
