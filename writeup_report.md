@@ -223,7 +223,25 @@ In addition to this, I also horizontally flipped all the images obtained in the 
 
 Training the model with the data obtained above and tuning the parameters, it was finaly able to drive on track1.
 
-![alt text][image5] ![alt text][image6] ![alt text][image7] ![alt text][image8] ![alt text][image9]
+Attempt1 #1:
+
+![alt text][image5]
+
+Attempt2 #2:
+
+![alt text][image6]
+
+Attempt #3:
+
+![alt text][image7]
+
+Attempt #4:
+
+![alt text][image8]
+
+Success:
+
+![alt text][image9]
 
 This model was already able to drive on track2 even without seeing track2 before:
 
