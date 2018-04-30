@@ -29,6 +29,8 @@ The goals / steps of this project are the following:
 [image16]: ./examples/image.png "Example Image"
 [image17]: ./examples/mask.png "Saturation Mask"
 [image18]: ./examples/out.png "Filtered Image"
+[image19]: ./examples/activation.gif "Conv1 activation"
+
 
 
 
@@ -258,3 +260,7 @@ Image - Mask - Filtered Image
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 I used this training data for training the model for 3 epochs.
+
+Here is a visualisation of the output of the first activation layer (36 channels) while driving on track1:
+
+![alt text][image19]
