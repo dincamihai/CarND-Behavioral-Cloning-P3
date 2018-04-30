@@ -261,6 +261,8 @@ Image - Mask - Filtered Image
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 I used this training data for training the model for 3 epochs.
 
-Here is a visualisation of the output of the first activation layer (36 channels) while driving on track1:
+Here is a visualisation of the output of the cropping layer + the first activation layer (36 channels) while driving on track1:
 
 ![alt text][image19]
+
+It appears that some of the channels are highly activated by the road edge but there are also channels activated by the road surface.
