@@ -266,3 +266,10 @@ Here is a visualisation of the output of the cropping layer + the first activati
 ![alt text][image19]
 
 It appears that some of the channels are highly activated by the road edge but there are also channels activated by the road surface.
+
+NOTE:
+
+I have also included in the repository the video recordings of both tracks:
+  
+  - final-track1.mp4
+  - final-track2.mp4
